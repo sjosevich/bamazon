@@ -19,6 +19,7 @@ var connection = mysql.createConnection({
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     readProducts();
+    
   });
 
   function readProducts() {
@@ -27,6 +28,25 @@ var connection = mysql.createConnection({
       if (err) throw err;
       // Log all results of the SELECT statement
       console.log(res);
-      connection.end();
+      Buy_A_Product();
+      //connection.end();
     });
   }
+
+ var Buy_A_Product = function(){
+     inquirer.prompt({
+         name : "productToBuy",
+         type: "input",
+         message: "Please provide the product Id you want to by."
+     }).then(function(answer){
+         var selection = answer.productToBuy;
+         connection.query("Select *from products where item_id=?", selection, function(err,res){
+             if (err) throw err;
+             if (res.length === 0){
+                 console.log("Please select another product, this product doesn't exist")
+                 Buy_A_Product();
+             }else {console.log("The product is in inventory")}
+
+         })
+     })
+ }
